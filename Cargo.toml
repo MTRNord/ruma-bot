@@ -18,10 +18,10 @@ url = "2.1.0"
 path = "macros"
 
 #[patch.'https://github.com/ruma/ruma-client-api'.ruma-client-api]
+[patch.crates-io]
 # Cargo doesn't allow using a different branch of the same repository. Trick it into thinking that
 # we're using a different repository.
-#git = "https://github.com/ruma//ruma-client-api.git"
-#branch = "request-ctors"
+ruma-client-api = {git = "https://github.com/MTRNord/ruma-client-api.git", branch = "request-ctors-new"}
 
 [workspace]
 members = ["macros"]
