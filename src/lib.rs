@@ -13,7 +13,7 @@ use std::{collections::HashMap, pin::Pin, sync::Arc};
 use anymap::any::CloneAny;
 use failure::{err_msg, Fallible};
 use futures::{Future, TryStreamExt};
-use ruma_client::{api, HttpsClient as MatrixClient};
+use ruma_client::{api, events, HttpsClient as MatrixClient};
 use url::Url;
 
 // TODO: Get rid of compiler warnings, either by replacing CloneAny, or by fixing the issue upstream
@@ -214,12 +214,13 @@ impl Bot {
         while let Some(res) = sync_stream.try_next().await? {
             for (_room_id, room) in res.rooms.join {
                 for event in room.timeline.events {
+                    let event: events::EventResult<events::collections::all::RoomEvent> = event;
                     // Filter out the text messages
-                    if let RoomEvent::RoomMessage(MessageEvent {
+                    if let events::EventResult::Ok(RoomEvent::RoomMessage(MessageEvent {
                         content: MessageEventContent::Text(TextMessageEventContent { body, .. }),
                         sender: _sender,
                         ..
-                    }) = event
+                    })) = event
                     {
                         if body.starts_with('!') {
                             if let Some(idx) = body.find(char::is_whitespace) {
